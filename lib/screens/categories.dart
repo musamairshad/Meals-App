@@ -33,6 +33,8 @@ class _CategoriesScreenState extends State<CategoriesScreen>
       lowerBound: 0,
       upperBound: 1,
     );
+
+    _animationController.forward();
   }
 
   @override
@@ -67,25 +69,43 @@ class _CategoriesScreenState extends State<CategoriesScreen>
         //     title: const Text('Pick your category'),
         //   ),
         //   body:
-        GridView(
-      padding: const EdgeInsets.all(24.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 3 / 2,
-        crossAxisSpacing: 20,
-        mainAxisSpacing: 20,
+        AnimatedBuilder(
+      animation: _animationController,
+      child: GridView(
+        padding: const EdgeInsets.all(24.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 3 / 2,
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 20,
+        ),
+        children: [
+          // Alternative approach: availableCategories.map((category) =>
+          //CategoryGridItem(category: category)).toList()
+          for (final category in availableCategories)
+            CategoryGridItem(
+              category: category,
+              onSelectCategory: () {
+                _selectCategory(context, category);
+              },
+            ),
+        ],
       ),
-      children: [
-        // Alternative approach: availableCategories.map((category) =>
-        //CategoryGridItem(category: category)).toList()
-        for (final category in availableCategories)
-          CategoryGridItem(
-            category: category,
-            onSelectCategory: () {
-              _selectCategory(context, category);
-            },
+      builder: (ctx, child) => SlideTransition(
+        position: _animationController.drive(
+          Tween(
+            begin: const Offset(0.0, 0.3),
+            end: const Offset(0, 0),
           ),
-      ],
+        ),
+        child: child,
+      ),
+      // Padding(
+      //   padding: EdgeInsets.only(
+      //     top: 100 - _animationController.value * 100,
+      //   ),
+      //   child: child,
+      // ),
     );
     // );
   }
